@@ -1,0 +1,5 @@
+{
+    "Infected": {
+        "LoopAndAnimationTimeConflict": "An infected cannot loop while a duration is set.\nThe set duration will override the looping property.\nIf this is unintended behavior, please remove either the looping or duration property."
+    }
+}
