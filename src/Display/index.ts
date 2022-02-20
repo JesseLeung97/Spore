@@ -1,6 +1,12 @@
 import "./index.css";
+import { InfectedLogger } from "src/Utility/Logger";
+import Errors from "src/Utility/Errors.json";
 
 (function createCanvas() {
+
+    console.log(Errors["Infected"]["LoopAndAnimationTimeConflict"]);
+    const logger = new InfectedLogger();
+    logger.LoopAndAnimationTimeConflict();
 
     const app = document.getElementById("app");
 

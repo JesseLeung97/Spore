@@ -1,13 +1,18 @@
 //----- Configuration -----//
 //----- Types -----//
+import { TPair, TPairs } from "src/Utility/types";
 //----- Components -----//
 import { Spore } from "Spore";
-import { InfectedLogger } from "Utility/Logger";
+import { InfectedLogger } from "src/Utility/Logger";
 //----- Outside Libraries -----//
 import { uuid } from "uuidv4";
 
+// Spore controller -- Initialize, update, and destroy spores
 class Infected {
     InfectedId: string;
+
+    OriginX: number;
+    OriginY: number;
 
     BoundMinX: number;
     BoundMinY: number;
@@ -18,7 +23,7 @@ class Infected {
     IsLoop: boolean;
     MaxSporeCount: number;
 
-    Spores: Array<Spore>;
+    Spores: TPairs<number, Spore>;
 
     //TODO
     //ASSIGN REAL VALUES AFTER TESTING
@@ -27,6 +32,8 @@ class Infected {
     _maxSporeCount = 10;
 
     constructor(
+        OriginX: number,
+        OriginY: number,
         BoundMinX: number, 
         BoundMinY: number, 
         BoundMaxX: number, 
@@ -35,6 +42,9 @@ class Infected {
         IsLoop?: boolean, 
         MaxSporeCount?: number) {
             this.InfectedId = uuid();
+
+            this.OriginX = OriginX;
+            this.OriginY = OriginY;
 
             this.BoundMinX = BoundMinX;
             this.BoundMinY = BoundMinY;
@@ -47,8 +57,40 @@ class Infected {
 
             if(Duration !== undefined && IsLoop !== undefined) {
                 this.IsLoop = false;
-                InfectedLogger.LoopAndAnimationTimeConflict();
+                const logger = new InfectedLogger();
+                logger.LoopAndAnimationTimeConflict();
             }
+    }
+
+    // Cleanup and regenerate spores which have left the visual boundaries
+    checkQZBoundaries(): void {
+        let markedForCleanup: TPairs<number, Spore> = [];
+        this.Spores.forEach((sporePair) => {
+            const spore = sporePair[1];
+            if(spore.PosX > this.BoundMaxX || spore.PosX < this.BoundMinX || spore.PosY > this.BoundMaxY || spore.PosY < this.BoundMinY) {
+                markedForCleanup.push(sporePair);
+            }
+        });
+
+        markedForCleanup.forEach((oldSpore) => {
+            const newSpore = new Spore(this.OriginX, this.OriginY, 1, 1);
+            const oldSporeIndex = oldSpore[0];
+            this.Spores[oldSporeIndex][1] = newSpore;
+        });
+    }
+
+    // Instantiate spores into list
+    // Tuple<array index, Spore object>
+    releaseSpores(maxCount: number): TPairs<number, Spore> {
+        let spores: TPairs<number, Spore> = [];
+        for(let i = 0; i < maxCount; i++) {
+            const newSpore = new Spore(this.OriginX, this.OriginY, 1, 1);
+            spores.push([i, newSpore]);
+        }
+        return spores;
+    }
+
+    ReleaseSpores(): void {
 
     }
 }

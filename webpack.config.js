@@ -8,6 +8,10 @@ module.exports = {
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
+    alias: {
+        root: __dirname,
+        src: path.resolve(__dirname, 'src'),
+    }
   },
   devtool: 'inline-source-map',
   devServer: {
