@@ -81,7 +81,7 @@ class Infected {
 
     // Instantiate spores into list
     // Tuple<array index, Spore object>
-    releaseSpores(maxCount: number): TPairs<number, Spore> {
+    masksOn(maxCount: number): TPairs<number, Spore> {
         let spores: TPairs<number, Spore> = [];
         for(let i = 0; i < maxCount; i++) {
             const newSpore = new Spore(this.OriginX, this.OriginY, 1, 1);
@@ -90,7 +90,6 @@ class Infected {
         return spores;
     }
 
-    ReleaseSpores(): void {
+    
 
-    }
 }

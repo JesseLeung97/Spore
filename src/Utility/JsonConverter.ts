@@ -14,7 +14,6 @@ type TTextMasterName = keyof typeof jsonDefine;
 
 function GetTexts<T>(objectName: TTextMasterName): T | null {
     const jsonFile = jsonDefine[objectName];
-    console.log(jsonFile);
     if(jsonFile === undefined) {
         const logger = new ConverterLogger();
         logger.CantFindJson(objectName.toString());
