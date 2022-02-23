@@ -22,4 +22,8 @@ class ConverterLogger {
     }
 }
 
+// class ForceTestLogger {
+//     ExpectedGravityCalculation()
+// }
+
 export { InfectedLogger, ConverterLogger };

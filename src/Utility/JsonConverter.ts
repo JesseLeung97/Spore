@@ -19,7 +19,7 @@ function GetTexts<T>(objectName: TTextMasterName): T | null {
         logger.CantFindJson(objectName.toString());
         return;
     }
-    return jsonFile as T;
+    return jsonFile as unknown as T;
 }
 
 export { GetTexts };

@@ -13,7 +13,8 @@ type TErrors = {
 type TPair<T,K> = [T,K];
 type TPairs<T,K> = TPair<T,K>[];
 
+type TForceDirection = "X" | "Y";
 type TForce1D = keyof typeof ForceDefine1D;
 type TForce2D = keyof typeof ForceDefine2D;
 
-export { TErrors, TPair, TPairs, TForce1D, TForce2D };
+export { TErrors, TPair, TPairs, TForce1D, TForce2D, TForceDirection };

@@ -4,7 +4,7 @@ import Errors from "src/Utility/Errors.json";
 
 (function createCanvas() {
 
-    console.log(Errors["Infected"]["LoopAndAnimationTimeConflict"]);
+    //console.log(Errors["Infected"]["LoopAndAnimationTimeConflict"]);
     const logger = new InfectedLogger();
     logger.LoopAndAnimationTimeConflict();
 

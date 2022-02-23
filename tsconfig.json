@@ -11,6 +11,8 @@
       "paths": {
           "src/*": ["*"]
       },
-      "moduleResolution": "node"
+      "moduleResolution": "node",
+      "resolveJsonModule": true,
+      "allowSyntheticDefaultImports": true
     }
 }
