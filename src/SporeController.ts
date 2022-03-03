@@ -8,7 +8,7 @@ import { InfectedLogger } from "src/Utility/Logger";
 import { uuid } from "uuidv4";
 
 // Spore controller -- Initialize, update, and destroy spores
-class Infected {
+class SporeController {
     InfectedId: string;
 
     OriginX: number;
@@ -63,7 +63,7 @@ class Infected {
     }
 
     // Cleanup and regenerate spores which have left the visual boundaries
-    checkQZBoundaries(): void {
+    checkViewportBoundaries(): void {
         let markedForCleanup: TPairs<number, Spore> = [];
         this.Spores.forEach((sporePair) => {
             const spore = sporePair[1];
@@ -81,7 +81,7 @@ class Infected {
 
     // Instantiate spores into list
     // Tuple<array index, Spore object>
-    masksOn(maxCount: number): TPairs<number, Spore> {
+    emitSpores(maxCount: number): TPairs<number, Spore> {
         let spores: TPairs<number, Spore> = [];
         for(let i = 0; i < maxCount; i++) {
             const newSpore = new Spore(this.OriginX, this.OriginY, 1, 1);
@@ -90,6 +90,6 @@ class Infected {
         return spores;
     }
 
-    
-
 }
+
+export { SporeController }

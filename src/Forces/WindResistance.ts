@@ -6,7 +6,7 @@ import { ForceBase1D, ForceBase2D } from "src/Forces/ForceBase";
 
 class WindResistanceX extends ForceBase1D {
     constructor(objectMass: number, duration: number) {
-        super("WindResistanceX", "X", objectMass, duration);
+        super("WindResistanceX", "X", "none", objectMass, duration);
     }
 
     instantaneousForceStrength = () => {
@@ -16,7 +16,7 @@ class WindResistanceX extends ForceBase1D {
 
 class WindResistanceY extends ForceBase1D {
     constructor(objectMass: number, duration: number) {
-        super("WindResistanceY", "Y", objectMass, duration);
+        super("WindResistanceY", "Y", "none", objectMass, duration);
     }
 
     instantaneousForceStrength = () => {

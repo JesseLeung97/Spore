@@ -14,16 +14,14 @@ class InfectedLogger {
     }
 }
 
-// These errors log failure to load JSON.
-// Best not to set their strings using the same loader
+/**
+ *  Handles logging of errors related to a failure to load JSON files
+ *  Uses hardcodes strings to prevent failing from the issue it is reporting
+ */
 class ConverterLogger {
     CantFindJson(name: string) {
         console.error(`A Json file named "${name}.json" could not be found.`);
     }
 }
-
-// class ForceTestLogger {
-//     ExpectedGravityCalculation()
-// }
 
 export { InfectedLogger, ConverterLogger };

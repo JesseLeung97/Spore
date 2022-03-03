@@ -8,7 +8,7 @@ import { WindResistanceX, WindResistanceY, WindResistance } from "src/Forces/Win
 const ForceDefine1D = {
     "Gravity": Gravity,
     "WindResistanceX": WindResistanceX,
-    "WindResistanceY": WindResistanceY 
+    "WindResistanceY": WindResistanceY
 }
 
 const ForceDefine2D = {
