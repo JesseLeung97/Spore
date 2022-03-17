@@ -38,7 +38,6 @@ interface IApplyForceProps {
  *  applyOffsetModifier: modify strength of the force based on distance from the force's origin
  *  instantaneousForceStrength: calculate the strength of a force at an instant in time
  */
-
 abstract class ForceBase1D {
     id: string;
     type: TForce1D;

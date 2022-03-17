@@ -1,4 +1,5 @@
 //----- Configuration -----//
+import { SetPropsOrDefault } from "src/Utility/SetPropsOrDefault";
 //----- Types -----//
 import { TPair, TPairs } from "src/Utility/types";
 //----- Components -----//
@@ -7,87 +8,135 @@ import { InfectedLogger } from "src/Utility/Logger";
 //----- Outside Libraries -----//
 import { uuid } from "uuidv4";
 
-// Spore controller -- Initialize, update, and destroy spores
+interface ISporeControllerProps {
+    originX: number,
+    originY: number,
+    boundMinX: number, 
+    boundMinY: number, 
+    boundMaxX: number, 
+    boundMaxY: number, 
+    duration?: number, 
+    isLoop?: boolean, 
+    maxSporeCount?: number,
+    shouldRegenerateSpores?: boolean
+}
+
+
+/**
+ *  Memeber Properties
+ *  InfectedId: uui to identiy instance of 
+ *  Member Functions
+ */
 class SporeController {
-    InfectedId: string;
+    id: string;
+    originX: number;
+    originY: number;
+    boundMinX: number;
+    boundMinY: number;
+    boundMaxX: number;
+    boundMaxY: number;
+    duration: number;
+    isLoop: boolean;
+    maxSporeCount: number;
+    shouldRegenerateSpores: boolean;
 
-    OriginX: number;
-    OriginY: number;
-
-    BoundMinX: number;
-    BoundMinY: number;
-    BoundMaxX: number;
-    BoundMaxY: number;
-
-    Duration: number;
-    IsLoop: boolean;
-    MaxSporeCount: number;
-
-    Spores: TPairs<number, Spore>;
+    spores: TPairs<number, Spore>;
 
     //TODO
     //ASSIGN REAL VALUES AFTER TESTING
     _duration = 10;
     _isLoop = false;
     _maxSporeCount = 10;
+    _shouldRegenerateSpores = true;
 
-    constructor(
-        OriginX: number,
-        OriginY: number,
-        BoundMinX: number, 
-        BoundMinY: number, 
-        BoundMaxX: number, 
-        BoundMaxY: number, 
-        Duration?: number, 
-        IsLoop?: boolean, 
-        MaxSporeCount?: number) {
-            this.InfectedId = uuid();
+    constructor(props: ISporeControllerProps) {
+        this.id = uuid();
 
-            this.OriginX = OriginX;
-            this.OriginY = OriginY;
+        this.originX = props.originX;
+        this.originY = props.originY;
 
-            this.BoundMinX = BoundMinX;
-            this.BoundMinY = BoundMinY;
-            this.BoundMaxX = BoundMaxX;
-            this.BoundMaxY = BoundMaxY;
-            
-            this.Duration = (Duration === undefined ? this._duration : Duration);
-            this.IsLoop = (IsLoop === undefined ? this._isLoop :  IsLoop);
-            this.MaxSporeCount = (MaxSporeCount === undefined ? this._maxSporeCount : MaxSporeCount);
+        this.boundMinX = props.boundMinX;
+        this.boundMinY = props.boundMinY;
+        this.boundMaxX = props.boundMaxX;
+        this.boundMaxY = props.boundMaxY;
+        
+        this.duration = SetPropsOrDefault(props.duration, this._duration);
+        this.isLoop = SetPropsOrDefault(props.isLoop, this._isLoop);
+        this.maxSporeCount = SetPropsOrDefault(props.maxSporeCount, this._maxSporeCount);
+        this.shouldRegenerateSpores = SetPropsOrDefault(props.shouldRegenerateSpores, this._shouldRegenerateSpores);
 
-            if(Duration !== undefined && IsLoop !== undefined) {
-                this.IsLoop = false;
-                const logger = new InfectedLogger();
-                logger.LoopAndAnimationTimeConflict();
-            }
+        if(props.duration !== undefined && props.isLoop !== undefined) {
+            this.isLoop = false;
+            const logger = new InfectedLogger();
+            logger.LoopAndAnimationTimeConflict();
+        }
     }
 
-    // Cleanup and regenerate spores which have left the visual boundaries
-    checkViewportBoundaries(): void {
+    /**
+     * Cleanup and regenerate spores which have left the viewport boundaries
+     */
+    checkViewportBoundaries(shouldRegenerate: boolean): void {
         let markedForCleanup: TPairs<number, Spore> = [];
-        this.Spores.forEach((sporePair) => {
+        this.spores.forEach((sporePair) => {
             const spore = sporePair[1];
-            if(spore.PosX > this.BoundMaxX || spore.PosX < this.BoundMinX || spore.PosY > this.BoundMaxY || spore.PosY < this.BoundMinY) {
+            if(spore.PosX > this.boundMaxX || spore.PosX < this.boundMinX || spore.PosY > this.boundMaxY || spore.PosY < this.boundMinY) {
                 markedForCleanup.push(sporePair);
             }
         });
 
-        markedForCleanup.forEach((oldSpore) => {
-            const newSpore = new Spore(this.OriginX, this.OriginY, 1, 1);
-            const oldSporeIndex = oldSpore[0];
-            this.Spores[oldSporeIndex][1] = newSpore;
-        });
+        if(shouldRegenerate) {
+            markedForCleanup.forEach((oldSpore) => {
+                const newSpore = new Spore(this.originX, this.originY, 1, 1);
+                const oldSporeIndex = oldSpore[0];
+                this.spores[oldSporeIndex][1] = newSpore;
+            });
+        } else {
+            markedForCleanup.forEach((oldSpore) => {
+                const oldSporeIndex = oldSpore[0];
+                this.spores[oldSporeIndex][1] = null;
+            });
+        }
+       
     }
 
-    // Instantiate spores into list
-    // Tuple<array index, Spore object>
+    /**
+     *  Release spores by pushing into a list
+     */
     emitSpores(maxCount: number): TPairs<number, Spore> {
         let spores: TPairs<number, Spore> = [];
         for(let i = 0; i < maxCount; i++) {
-            const newSpore = new Spore(this.OriginX, this.OriginY, 1, 1);
+            const newSpore = new Spore(this.originX, this.originY, 1, 1);
             spores.push([i, newSpore]);
         }
         return spores;
+    }
+
+    /**
+     * 
+     */
+    sporeUpdateLoop(): void {
+        let previousStepTime = 0;
+        let startTime: number = null;
+        let isLoopComplete = false;
+
+        const update = (stepTime: number): void => {
+            if(startTime === null) {
+                startTime = stepTime;
+            }
+
+            const timeElapsed = stepTime - startTime;
+
+            if(timeElapsed >= this.duration) {
+                isLoopComplete = true;
+            }
+
+            if(stepTime !== previousStepTime) {
+               this.checkViewportBoundaries(this.shouldRegenerateSpores);
+               
+            }
+
+        }
+
     }
 
 }
